@@ -1,0 +1,327 @@
+﻿@{
+    ViewBag.Title = "Track Vans";
+}
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Track Vans</h3>
+        <div class="box-tools pull-right">
+            <!-- Buttons, labels, and many other things can be placed here! -->
+            <!-- Here is a label for example -->
+            <span class="fa fa-map-marker"></span>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="map"></div>
+            </div>
+        </div>
+        <div id="infoSec">
+        </div>
+        <div>
+            <canvas id="canvasRL" width="48" height="48" style="display:none" />
+            <canvas id="canvasLR" width="48" height="48" style="display:none" />
+        </div>
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+
+
+
+
+@section scripts{
+
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    @Scripts.Render("~/bundles/gmaps")
+    <script>
+        $(document).ready(function () {
+            Initialize();
+            InitScene();
+        });
+
+        // Global variables...
+        var vanIconLR;
+        var vanIconRL;
+        var center;
+        var zoomLevel;
+        var stations = [];
+        var path;
+        var vans = [];
+        var speed;
+        var elapsed;
+        var canvasLR;
+        var canvasRL;
+        var imageObjLR;
+        var imageObjRL;
+
+        function Initialize() {
+            // Animation control parameters
+            speed = 0.0001;
+            elapsed = 0.04;
+
+            //Loading canvas images...
+            canvasLR = document.getElementById('canvasLR');
+            imageObjLR = new Image();
+            imageObjLR.src = '@Url.Content("~/Content/Images/vanLR.png")';
+
+            canvasRL = document.getElementById('canvasRL');
+            imageObjRL = new Image();
+            imageObjRL.src = '@Url.Content("~/Content/Images/vanRL.png")';
+
+            imageObjLR.onload = function () {
+                canvasLR.getContext('2d').drawImage(imageObjLR, 0, 0);
+            };
+
+            imageObjRL.onload = function () {
+                canvasRL.getContext('2d').drawImage(imageObjRL, 0, 0);
+            };
+
+            // Setting map center and zoom level
+            center = { lat: 37.401436, lng: -122.139281 };
+            zoomLevel = 17;
+
+            // Initializing stations
+            stations.push({
+                lat: 37.402749,
+                lng: -122.142135,
+                title: 'VMware Parking Garage',
+            });
+            stations.push({
+                lat: 37.399808,
+                lng: -122.137178,
+                title: 'Tesla Parking',
+            });
+
+            // Initializing path
+            var node0 = {
+                lat: 37.402463,
+                lng: -122.141776,
+                next: 1
+            };
+            var node1 = {
+                lat: 37.400239,
+                lng: -122.138050,
+                next: 2
+            };
+            var node2 = {
+                lat: 37.400338,
+                lng: -122.137940,
+                next: 3
+            };
+            var node3 = {
+                lat: 37.402562,
+                lng: -122.141673,
+                next: 0
+            };
+            path = [node0, node1, node2, node3];
+
+            //Initializing vans
+            $.getJSON('@Url.Action("Vans")', null, function (vansl) {
+                $.each(vansl, function (i, item) {
+                    vans.push({
+                        marker: map.addMarker(
+                            {
+                                lat: 0,
+                                lng: 0,
+                                title: item.Name,
+                                icon: GenerateIcon(canvasRL, item.Color),
+                                infoWindow: {
+                                    content: '<ul>' + $.map(item.Drivers, function (elem, index) {
+                                        return "<li>" + elem + "</li>";
+                                    }).join("") + '</ul>'
+                                }
+                            }),
+                        start: 0,
+                        end: 0,
+                        color: item.Color,
+                        stoped: false,
+                        duration: 0
+                    });
+                });
+
+                for (i = 0; i < vans.length; i++) {
+                    RandomizeVanLocation(i);
+                    CreateVanInfoSection(i);
+                }
+
+                // As result of asynchronous json call, simulation should be started here...
+                window.setInterval(Simulate, 40);
+
+                // This method checks and updates vans' on-board drivers status every second
+                window.setInterval(UpdateVansStatus, 1000);
+            });
+        }
+
+        function UpdateVansStatus() {
+            $.getJSON('@Url.Action("Vans")', null, function (vansl) {
+                $.each(vansl, function (i, item) {
+                    vans[i].marker.infoWindow.setContent('<ul>' + $.map(item.Drivers, function (elem, index) {
+                        return "<li>" + elem + "</li>";
+                    }).join("") + '</ul>');
+                    UpdateVanDriversInfo(i);
+                });
+            });
+        }
+
+        function GenerateIcon(canvas, color) {
+            var context = canvas.getContext('2d');
+            var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imgData.data;
+
+            for (var i = 0; i < data.length; i += 4) {
+                if (data[i + 3] > 0) {
+                    data[i] = color.R;
+                    data[i + 1] = color.G;
+                    data[i + 2] = color.B;
+                }
+            }
+
+            context.putImageData(imgData, 0, 0);
+            return new google.maps.MarkerImage(canvas.toDataURL(),
+                                new google.maps.Size(48, 48),
+                                new google.maps.Point(0, 0),
+                                new google.maps.Point(24, 24));
+        }
+
+        function CreateVanInfoSection(i) {
+            $("#infoSec").append("<hr/><div id='Van" + i + "'></div>");
+            $("#Van" + i).append("<div class='row'><div class='col-md-2'><h3 class='Name'><strong>" + vans[i].marker.title + "</strong></h3></div></div>");
+            $("#Van" + i).append("<div class='row'><div class='col-md-1'/><div class='col-md-1'><strong>Direction:</strong></div><div class='col-md-3'><div class='direction'>" + GetVanDirection(i) + "</div></div></div>");
+            $("#Van" + i).append("<div class='row'><div class='col-md-1'/><div class='col-md-2'><strong>On-board drivers:</strong></div></div>");
+            $("#Van" + i).append("<div class='row'><div class='col-md-2'/><div class='col-md-2'><div class='drivers'>" + vans[i].marker.infoWindow.content + "</div></div></div></div>");
+        }
+
+        function RandomizeVanLocation(i) {
+            // Randomize van's start point...
+            vans[i].start = Math.floor(Math.random() * 4);
+            vans[i].end = path[vans[i].start].next;
+
+            var t = Math.random();
+            var lat = (1 - t) * path[vans[i].start].lat + t * path[vans[i].end].lat;
+            var lng = (1 - t) * path[vans[i].start].lng + t * path[vans[i].end].lng;
+            vans[i].marker.setPosition(new google.maps.LatLng(lat, lng));
+
+            // Set van's direction and icon based on direction (start point)
+            SetVanIcon(i);
+        }
+
+        function SetVanIcon(i) {
+            switch (vans[i].start) {
+                case 0:
+                case 3:
+                    vans[i].marker.setIcon(GenerateIcon(canvasLR, vans[i].color));
+                    break;
+                default:
+                    vans[i].marker.setIcon(GenerateIcon(canvasRL, vans[i].color));
+                    break;
+            }
+        }
+
+        function GetVanDirection(i) {
+            switch (vans[i].start) {
+                case 0:
+                case 3:
+                    return "toward Tesla parking";
+                default:
+                    return "toward VMWare parking garage";
+            }
+        }
+
+        function InitScene() {
+            // Rendering map
+            map = new GMaps({
+                el: '#map',
+                lat: center.lat,
+                lng: center.lng,
+                zoom: zoomLevel,
+                mapTypeId: google.maps.MapTypeId.SATELLITE
+            });
+
+            // Rendering stations
+            for (i = 0; i < stations.length; i++) {
+                map.addMarker(stations[i]);
+            }
+        }
+
+        function UpdateVanDriversInfo(i) {
+            $("#Van" + i + " .drivers").empty();
+            $("#Van" + i + " .drivers").append(vans[i].marker.infoWindow.content);
+        }
+
+        function UpdateVanLocationInfo(i) {
+            $("#Van" + i + " .direction").empty();
+            $("#Van" + i + " .direction").append(GetVanDirection(i));
+        }
+
+        function Simulate() {
+            for (i = 0; i < vans.length; i++) {
+                if (vans[i].stoped == true) {
+                    vans[i].duration += 40;
+                    if (vans[i].duration >= 5000) {
+                        vans[i].duration = 0;
+                        vans[i].stoped = false;
+                    }
+                    continue;
+                }
+                var start = new Vector2D(path[vans[i].start].lat, path[vans[i].start].lng);
+                var end = new Vector2D(path[vans[i].end].lat, path[vans[i].end].lng);
+                var distance = Vector2D.distance(start, end);
+                var direction = Vector2D.norm(Vector2D.sub(end, start));
+                var position = new Vector2D(vans[i].marker.getPosition().lat(), vans[i].marker.getPosition().lng());
+
+                if (Vector2D.distance(start, position) >= distance) {
+                    vans[i].start = vans[i].end;
+                    vans[i].end = path[vans[i].start].next;
+                    vans[i].marker.setPosition(new google.maps.LatLng(path[vans[i].start].lat, path[vans[i].start].lng));
+                    SetVanIcon(i);
+                    UpdateVanLocationInfo(i);
+                    if (vans[i].start == 0 || vans[i].start == 2) {
+                        vans[i].stoped = true;
+                        vans[i].duration = 0;
+                    }
+                    continue
+                }
+
+                position = Vector2D.add(position, Vector2D.mulByScalar(direction, speed * elapsed));
+                vans[i].marker.setPosition(new google.maps.LatLng(position.x, position.y));
+            }
+        }
+
+        // Vector math library
+        Vector2D.borderLength = function (a) {
+            return Math.sqrt(a.x * a.x + a.y * a.y);
+        }
+
+        Vector2D.sub = function (a, b) {
+            return new Vector2D(a.x - b.x, a.y - b.y);
+        }
+
+        Vector2D.add = function (a, b) {
+            return new Vector2D(a.x + b.x, a.y + b.y);
+        }
+
+        Vector2D.mulByScalar = function (a, s) {
+            return new Vector2D(a.x * s, a.y * s);
+        }
+
+        Vector2D.norm = function (a) {
+            var l = Vector2D.borderLength(a);
+            return new Vector2D(a.x / l, a.y / l);
+        }
+
+        Vector2D.distance = function (a, b) {
+            var sub = Vector2D.sub(b, a);
+            return Vector2D.borderLength(sub);
+        }
+
+        function Vector2D(x, y) {
+            if (!(this instanceof Vector2D)) {
+                return new Vector2D(x, y);
+            }
+            this.x = x || 0;
+            this.y = y || 0;
+        }
+
+    </script>
+}

@@ -1,0 +1,232 @@
+﻿@model EasyPark.WebUI.Areas.Manager.ViewModels.Ticket.CreateViewModel
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Register</h3>
+        <div class="box-tools pull-right">
+            <!-- Buttons, labels, and many other things can be placed here! -->
+            <!-- Here is a label for example -->
+            <span class="fa fa-plus"></span>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-7">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @if (Model.Status)
+                        {
+                                <div class="alert alert-success">
+                                    <strong>Success!</strong> Ticket has been successfully created.
+                                </div>
+                        }
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.TicketNumber, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.TicketNumber, new { htmlAttributes = new { @class = "form-control " } })
+                                @Html.ValidationMessageFor(model => model.TicketNumber, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Plate, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.Plate, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Plate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Color, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.Color, new { htmlAttributes = new { @class = "form-control frmItems" } })
+                                @Html.ValidationMessageFor(model => model.Color, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group ">
+                            @Html.LabelFor(model => model.DepartureTime, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7 bootstrap-timepicker timepicker">
+                                @Html.EditorFor(model => model.DepartureTime, new { htmlAttributes = new { @class = "form-control input-small", id = "timepicker" } })
+                                @Html.ValidationMessageFor(model => model.DepartureTime, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <h4>Customer Info</h4>
+                        <hr />
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control " } })
+                                @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control frmItems" } })
+                                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control frmItems" } })
+                                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Driver, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-7">
+                                @Html.DropDownListFor(model => model.Driver, Model.Drivers, "Not Assigned", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Driver, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-4 col-md-9">
+                                <input type="submit" value="Register" class="btn btn-primary" />
+                                <input type="button" value="Take Picture" class="btn btn-default" onclick="ShowImagePanel()" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-md-5" id="imagePanel" style="display:none;">
+                <img id="image" class="img-responsive" />
+            </div>
+        </div>
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+
+
+
+@section scripts
+{
+
+    <script src="~/Content/Bootstrap_timePicker/js/bootstrap-timepicker.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#@Html.NameFor(m => m.TicketNumber)").focus();
+        });
+
+        $("#@Html.NameFor(m=>m.Plate)").change(function () {
+            $(".frmItems").prop('disabled', true);
+            var plate = $("#@Html.NameFor(m => m.Plate)").val();
+
+            $.getJSON("CheckPlate?plate=" + plate, null, function (data) {
+                $("#@Html.NameFor(m => m.Color)").val(data.Color);
+                $("#@Html.NameFor(m => m.PhoneNumber)").val(data.PhoneNumber);
+                $("#@Html.NameFor(m => m.FirstName)").val(data.FirstName);
+                $("#@Html.NameFor(m => m.LastName)").val(data.LastName);
+                $("#timepicker").val(data.DepartureTime);
+
+            }).fail(function () {
+                $("#@Html.NameFor(m => m.Color)").val("");
+                $("#@Html.NameFor(m => m.PhoneNumber)").val("");
+                $("#@Html.NameFor(m => m.FirstName)").val("");
+                $("#@Html.NameFor(m => m.LastName)").val("");
+                $("#timepicker").val("");
+            });
+            $(".frmItems").prop('disabled', false);
+            $("#@Html.NameFor(m => m.Color)").focus();
+        });
+
+        $("#@Html.NameFor(m=>m.PhoneNumber)").change(function () {
+            $(".frmItems").prop('disabled', true);
+            var phoneNumber = $("#@Html.NameFor(m => m.PhoneNumber)").val();
+
+            $.getJSON("CheckPhoneNumber?phoneNumber=" + phoneNumber, null, function (data) {
+                $("#@Html.NameFor(m => m.FirstName)").val(data.FirstName);
+                $("#@Html.NameFor(m => m.LastName)").val(data.LastName);                
+
+            }).fail(function () {
+                $("#@Html.NameFor(m => m.FirstName)").val("");
+                $("#@Html.NameFor(m => m.LastName)").val("");                
+            });
+            $(".frmItems").prop('disabled', false);
+            $("#@Html.NameFor(m => m.FirstName)").focus();
+        });
+
+        function ShowImagePanel() {
+            var rnd = Math.floor((Math.random() * 6) + 1);
+            var plate = "LTM-378";
+            $("#@Html.NameFor(m => m.PhoneNumber)").val("");
+            $("#@Html.NameFor(m => m.FirstName)").val("");
+            $("#@Html.NameFor(m => m.LastName)").val("");
+            $("#timepicker").val("");
+            switch (rnd) {
+                case 1:
+                    plate = "193-256";
+                    $("#@Html.NameFor(m => m.PhoneNumber)").val("1352657324");
+                    $("#@Html.NameFor(m => m.FirstName)").val("Alex");
+                    $("#@Html.NameFor(m => m.LastName)").val("McGregor");
+                    $("#timepicker").val("14:00");
+                    break;
+                case 2:
+                    plate = "911SAM";
+                    $("#@Html.NameFor(m => m.PhoneNumber)").val("1355526264");
+                    $("#@Html.NameFor(m => m.FirstName)").val("Sam");
+                    $("#@Html.NameFor(m => m.LastName)").val("James");
+                    $("#timepicker").val("17:30");
+                    break;
+                case 3:
+                    plate = "FP10-DAU";
+                    $("#@Html.NameFor(m => m.PhoneNumber)").val("");
+                    $("#@Html.NameFor(m => m.FirstName)").val("");
+                    $("#@Html.NameFor(m => m.LastName)").val("");
+                    $("#timepicker").val("");
+                    break;
+                case 4:
+                    plate = "AA-721-FD";
+                    $("#@Html.NameFor(m => m.PhoneNumber)").val("");
+                    $("#@Html.NameFor(m => m.FirstName)").val("");
+                    $("#@Html.NameFor(m => m.LastName)").val("");
+                    $("#timepicker").val("");
+                    break;
+                case 5:
+                    plate = "Havana";
+                    $("#@Html.NameFor(m => m.PhoneNumber)").val("");
+                    $("#@Html.NameFor(m => m.FirstName)").val("");
+                    $("#@Html.NameFor(m => m.LastName)").val("");
+                    $("#timepicker").val("");
+                    break;
+            }
+
+            $("#image").attr("src", "/Content/Images/" + plate + ".jpg");
+            $("#imagePanel").show();
+            $("#@Html.NameFor(m => m.Plate)").val(plate);
+
+        }
+
+        $('#timepicker').timepicker({
+            defaultTime: false,
+            maxHours: 24,
+            showMeridian: false
+        });
+
+        $("#PhoneNumber").focus(function () {
+            $(".bootstrap-timepicker-widget").hide();
+        });
+
+        $("#timepicker").focus(function () {
+            $('#timepicker').timepicker('setTime', $("#timepicker").val());
+            $(".bootstrap-timepicker-widget").show();
+        });
+    </script>
+
+}

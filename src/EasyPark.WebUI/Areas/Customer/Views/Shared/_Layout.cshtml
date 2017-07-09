@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    <link href="~/Content/Bootstrap_timePicker/css/bootstrap-timepicker.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/modernizr")
+    <meta name="description" content="The description of my page" />
+</head>
+<body class="hold-transition skin-green sidebar-mini">
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="@Url.Action("ParkedList","Ticket")" class="logo">
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>EasyPark</b></span><span class="label label-warning"></span>
+            </a>
+            <!-- Sidebar toggle button-->
+            <!-- Header Navbar -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+
+                <p class="title">&nbsp; Customer &nbsp; <span class="label label-warning"></span></p>
+                <div class="navbar-custom-menu">
+                    @using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post,new { id= "logoutForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="javascript:document.getElementById('logoutForm').submit()">  <i class="fa fa-sign-out"></i>&nbsp;Logout  </a>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </nav>
+        </header>
+
+        <aside class="main-sidebar">
+            <section class="sidebar">
+                    <ul class="sidebar-menu">
+                        <li class="header">&nbsp; Customer Menu  </li>
+                        <li><a href="@Url.Action("ParkedList", "Ticket")">  <i class="fa fa-bell"></i> &nbsp;Requests </a></li>
+                        <li><a href="@Url.Action("Edit", "Profile")">  <i class="fa fa-user"></i> &nbsp;Profile information </a></li>
+                        <li><a href="@Url.Action("PreferedTimes", "Profile")">  <i class="fa fa-hourglass-o"></i> &nbsp;Prefered times </a></li>
+                    </ul>               
+            </section>
+        </aside>
+
+        <div class="body-content content-wrapper">
+            <section class="content-header"></section>
+            <section class="content">
+                @RenderBody()
+                <audio src="~/Content/Sounds/NotificationAlert.mp3" id="NotificationSound" preload="auto"></audio>
+            </section>
+        </div>
+
+        <footer class="main-footer">
+            <strong>&copy; @DateTime.Now.Year - Easy Park</strong>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

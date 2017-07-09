@@ -1,0 +1,141 @@
+﻿@model  EasyPark.WebUI.Areas.CarDriver.ViewModels.TaskListViewModel
+
+@{
+    ViewBag.Title = "Task List";
+}
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Task List</h3>
+        <div class="box-tools pull-right">
+            <!-- Buttons, labels, and many other things can be placed here! -->
+            <!-- Here is a label for example -->
+            <span class="fa fa-list-ol"></span>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        @if (Model.Current == null && Model.Assigned.Count() == 0 && Model.Finished == null)
+        {
+            <br />
+            <div class="alert alert-info" role="alert">There is currently no task is assigned to this driver.</div>
+        }
+
+
+        @if (Model.Current != null)
+        {
+            <h2>Current task:</h2>
+            <section id="no-more-tables">
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Current.TicketID)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Current.Type)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Current.CreationDate)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-title="@Html.DisplayNameFor(model => model.Current.TicketID)">
+                                @Html.DisplayFor(model => model.Current.TicketID)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.Current.Type)">
+                                @Html.DisplayFor(model => model.Current.Type)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.Current.CreationDate)">
+                                @Html.DisplayFor(model => model.Current.CreationDate)
+                            </td>
+                            <td data-title="Action">
+                                @Html.ActionLink("Cancel", "CancelCurrentTask", new { id = Model.Current.StatusId }, new { @class = "btn btn-default" })
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        }
+
+        @if (Model.Finished != null)
+        {
+            <h2>Finished task:</h2>
+            <section id="no-more-tables">
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Finished.TicketID)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Finished.Type)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Finished.CreationDate)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-title="@Html.DisplayNameFor(model => model.Current.TicketID)">
+                                @Html.DisplayFor(model => model.Finished.TicketID)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.Current.Type)">
+                                @Html.DisplayFor(model => model.Finished.Type)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.Current.CreationDate)">
+                                @Html.DisplayFor(model => model.Finished.CreationDate)
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        }
+
+
+        @if (Model.Assigned.Count() > 0)
+        {
+            <h2>Assigned tasks:</h2>
+            <section id="no-more-tables">
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Current.TicketID)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Current.Type)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Current.CreationDate)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in Model.Assigned)
+                    {
+                        <tbody>
+                            <tr>
+                                <td data-title="@Html.DisplayNameFor(model => model.Current.TicketID)">
+                                    @Html.DisplayFor(modelItem => item.TicketID)
+                                </td>
+                                <td data-title="@Html.DisplayNameFor(model => model.Current.Type)">
+                                    @Html.DisplayFor(modelItem => item.Type)
+                                </td>
+                                <td data-title="@Html.DisplayNameFor(model => model.Current.CreationDate)">
+                                    @Html.DisplayFor(modelItem => item.CreationDate)
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            </section>
+        }
+    </div><!-- /.box-body -->
+</div><!-- /.box -->

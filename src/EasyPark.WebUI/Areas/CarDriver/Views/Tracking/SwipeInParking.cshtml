@@ -1,0 +1,43 @@
+﻿@model EasyPark.WebUI.Areas.CarDriver.ViewModels.SwipeViewModel
+
+@{
+    ViewBag.Title = "Swipe In Parking";
+}
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Swipe In Parking</h3>
+        <div class="box-tools pull-right">
+            <!-- Buttons, labels, and many other things can be placed here! -->
+            <!-- Here is a label for example -->
+            <span class="fa fa-toggle-off"></span>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        @using (Html.BeginForm())
+        {
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Driver, htmlAttributes: new { @class = "control-label col-md-3" })
+                    <div class="col-md-9">
+                        @Html.DropDownListFor(model => model.Driver, Model.Drivers, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Driver, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-9">
+                        <input type="submit" value="Swipe" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+
+

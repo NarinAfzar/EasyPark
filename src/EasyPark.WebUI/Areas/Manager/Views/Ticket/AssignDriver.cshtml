@@ -1,0 +1,52 @@
+﻿@model EasyPark.WebUI.Areas.Manager.ViewModels.Ticket.AssignDriverViewModel
+
+@{
+    ViewBag.Title = "Assign Driver";
+}
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Assign driver</h3>
+        <div class="box-tools pull-right">
+            <!-- Buttons, labels, and many other things can be placed here! -->
+            <!-- Here is a label for example -->
+            <span class="fa fa-user-plus"></span>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Drivers, htmlAttributes: new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.DropDownListFor(model => model.DriverId, Model.Drivers, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.HiddenFor(model => model.TicketId, Model.TicketId)
+            </div>
+
+
+            <div class="form-group">
+                <div class="col-md-offset-3 col-md-9">
+                    <input type="submit" value="Assign" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+    <div class="box-body">
+       
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

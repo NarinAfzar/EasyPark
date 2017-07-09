@@ -1,0 +1,78 @@
+﻿@model EasyPark.WebUI.Areas.ParkMan.ViewModels.Home.DashboardViewModel
+
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<h3>Dashboard</h3>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="info-box">
+            <!-- Apply any bg-* class to to the icon to color it -->
+            <span class="info-box-icon bg-blue"><i class="fa fa-sign-in"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Dispathed</span>
+                <span class="info-box-number">@Model.DispathedCarCount car(s) are waiting to be parked</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div>
+
+    <div class="col-md-4">
+        <div class="info-box">
+            <!-- Apply any bg-* class to to the icon to color it -->
+            <span class="info-box-icon bg-red"><i class="fa fa-car"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Parked</span>
+                <span class="info-box-number">Today @Model.ParkedCarCount car(s) were parked</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <!-- BAR CHART -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">One year parking chart</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="chart">
+                    <canvas id="barChart" style="height: 325px; width: 458px;" width="458" height="325"></canvas>
+                </div>
+            </div><!-- /.box-body -->
+        </div><!-- /.box -->
+
+    </div>
+</div>
+
+
+@section scripts{
+    <script src="~/Scripts/Chart.Core.js"></script>
+    <script src="~/Scripts/Chart.Bar.js"></script>
+
+    <script>
+        var data = {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fillColor: "rgba(0,0,220,0.5)",
+                    strokeColor: "rgba(220,220,220,0.8)",
+                    highlightFill: "rgba(220,220,220,0.75)",
+                    highlightStroke: "rgba(220,220,220,1)",
+                    data: [12, 59, 33, 90, 65, 80, 66, 45, 34, 77, 65, 80]
+                }
+            ]
+        };
+        $(document).ready(function () {
+            var ctx = document.getElementById("barChart").getContext("2d");
+            var myNewChart = new Chart(ctx).Bar(data);
+        });
+    </script>
+}

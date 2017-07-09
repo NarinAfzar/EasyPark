@@ -1,0 +1,95 @@
+﻿@model EasyPark.WebUI.Areas.Manager.ViewModels.Home.DashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<h3> Dashboard</h3>
+
+<div class="row">
+    <div class="col-md-4">
+        <!-- Apply any bg-* class to to the info-box to color it -->
+        <div class="info-box bg-red">
+            <span class="info-box-icon bg-black"><i class="fa fa-pie-chart"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Parking Capacity Status:</span>
+                <span class="info-box-number">66%</span>
+                <!-- The progress section is optional -->
+                <div class="progress">
+                    <div class="progress-bar" style="width: 66%"></div>
+                </div>
+                <span class="progress-description">
+                    66% of parking capacity is taken
+                </span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div>
+
+    <div class="col-md-4">
+        <div class="info-box">
+            <!-- Apply any bg-* class to to the icon to color it -->
+            <span class="info-box-icon bg-blue"><i class="fa fa-list-ol"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Tickets</span>
+                <span class="info-box-number">Today @Model.TicketCount ticket(s) are active</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div>
+
+    <div class="col-md-4">
+        <div class="info-box">
+            <!-- Apply any bg-* class to to the icon to color it -->
+            <span class="info-box-icon bg-red"><i class="fa fa-group"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Drivers</span>
+                <span class="info-box-number">Today @Model.DriverCount driver(s) are available</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <!-- BAR CHART -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">One year parking chart</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="chart">
+                    <canvas id="barChart" style="height: 325px; width: 458px;" width="458" height="325"></canvas>
+                </div>
+            </div><!-- /.box-body -->
+        </div><!-- /.box -->
+
+    </div>
+</div>
+
+
+@section scripts{
+    <script src="~/Scripts/Chart.Core.js"></script>
+    <script src="~/Scripts/Chart.Bar.js"></script>
+
+    <script>
+        var data = {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fillColor: "rgba(0,220,220,0.5)",
+                    strokeColor: "rgba(220,220,220,0.8)",
+                    highlightFill: "rgba(220,220,220,0.75)",
+                    highlightStroke: "rgba(220,220,220,1)",
+                    data: [65, 59, 80, 40, 56, 55, 66, 90, 44, 30, 56, 34]
+                }
+            ]
+        };
+        $(document).ready(function () {
+            var ctx = document.getElementById("barChart").getContext("2d");
+            var myNewChart = new Chart(ctx).Bar(data);
+        });
+    </script>
+}

@@ -1,0 +1,71 @@
+﻿@model IEnumerable<EasyPark.WebUI.Areas.Manager.ViewModels.Ticket.ReturnListViewModel>
+
+@{
+    ViewBag.Title = "Return list";
+}
+
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Checked in cars</h3>
+        <div class="box-tools pull-right">
+            <!-- Buttons, labels, and many other things can be placed here! -->
+            <!-- Here is a label for example -->
+            <span class="fa fa-sign-out"></span>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <section id="no-more-tables">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TicketNumber)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.LicensePlate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CustomerName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CustomerPhone)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                @foreach (var item in Model)
+                {
+                    <tbody>
+                        <tr>
+                            <td data-title="@Html.DisplayNameFor(model => model.TicketNumber)">
+                                @Html.DisplayFor(modelItem => item.TicketNumber)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.Description)">
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.LicensePlate)">
+                                @Html.DisplayFor(modelItem => item.LicensePlate)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.CustomerName)">
+                                @Html.DisplayFor(modelItem => item.CustomerName)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.CustomerPhone)">
+                                @Html.DisplayFor(modelItem => item.CustomerPhone)
+                            </td>
+                            <td data-title="Action">
+                                @Html.ActionLink("Return", "ReturnCarToCustomer", new { id = item.ID }, new { @class = "btn btn-default" })
+                            </td>
+                        </tr>
+                    </tbody>
+                }
+            </table>
+        </section>
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+
+

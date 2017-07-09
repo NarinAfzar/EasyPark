@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    <link href="~/Content/Bootstrap_timePicker/css/bootstrap-timepicker.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/modernizr")
+    <meta name="description" content="The description of my page" />
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="@Url.Action("Dashboard","Home")" class="logo">
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>EasyPark</b></span><span class="label label-warning"></span>
+            </a>
+            <!-- Sidebar toggle button-->
+            <!-- Header Navbar -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+               
+                <p class="title">&nbsp; Manager &nbsp; <span class="label label-warning notification-number-total"></span></p>
+               
+            </nav>
+        </header>
+
+        <aside class="main-sidebar">
+            <section class="sidebar">
+                <ul class="sidebar-menu">
+                    <li class="header">&nbsp; Manager Menu  </li>
+                    <li><a href="@Url.Action("Create","Ticket")"> <i class="fa fa-plus "></i> Create &nbsp;</a></li>
+                    <li><a href="@Url.Action("CheckedOutList","Ticket")"> <i class="fa fa-user-plus "></i> Assignments &nbsp;</a></li>
+                    <li><a href="@Url.Action("ParkedList","Ticket")"> <i class="fa fa-bell "></i> Request &nbsp;<span class="label label-warning notification-number-request"></span></a></li>
+                    <li><a href="@Url.Action("CheckedInList","Ticket")"> <i class="fa fa-sign-out "></i> Return &nbsp;<span class="label label-warning notification-number-return"></span></a></li>
+                    <li><a href="@Url.Action("Index","Ticket")">   <i class="fa fa-list-ul "></i>&nbsp;Active Tickets</a></li>
+                    <li><a href="@Url.Action("DriverList","Driver")">    <i class="fa fa-group "></i>&nbsp;Drivers</a></li>
+                    <li><a href="@Url.Action("Track","Van")">   <i class="fa fa-map-marker "></i>&nbsp;Track Vans</a></li>
+                </ul>
+            </section>
+        </aside>
+
+        <div class="body-content content-wrapper">
+            <section class="content-header"></section>
+            <section class="content">
+                @RenderBody() 
+                <audio src="~/Content/Sounds/NotificationAlert.mp3" id="NotificationSound" preload="auto"></audio>               
+            </section>
+        </div>
+
+        <footer class="main-footer">
+            <strong>&copy; @DateTime.Now.Year - Easy Park</strong>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    
+    <script>
+        $(document).ready(function () {            
+            CheckRequest();
+            setInterval(CheckRequest, 10000);
+        });
+
+        var total = 0;
+
+        function CheckRequest() {
+            total = 0;
+            $.ajax({
+                url: '@Url.Action("CheckRequestedCar", "Ticket")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: requestSuccessFunc
+            });
+            $.ajax({
+                url: '@Url.Action("GetCheckedInCarsCount", "Ticket")',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: returnSuccessFunc
+            });
+        }
+
+        function requestSuccessFunc(data) {
+            if (data > 0) {
+                total += data;
+                $(".notification-number-request").html(data);
+                document.getElementById("NotificationSound").play();
+            }
+            if(total>0)
+            {
+                $(".notification-number-total").html(total);
+            }
+        }
+
+        function returnSuccessFunc(data) {
+            if (data > 0) {
+                total += data;
+                $(".notification-number-return").html(data);
+                document.getElementById("NotificationSound").play();
+            }
+            if (total > 0) {
+                $(".notification-number-total").html(total);
+            }
+        }
+    </script>
+</body>
+</html>

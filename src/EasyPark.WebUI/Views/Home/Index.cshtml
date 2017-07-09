@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+        <li data-target="#myCarousel" data-slide-to="3"></li>
+    </ol>
+    <!-- Wrapper for Slides -->
+    <div class="carousel-inner" role="listbox">
+        <div class="item active">
+            <img src="@Url.Content("~/Content/Images/4-PM-Girl-Parking-Car.jpg")" />
+        </div>
+        <div class="item ">
+            <img src="@Url.Content("~/Content/Images/parking-garage.jpg")" />
+        </div>
+        <div class="item">
+            <img src="@Url.Content("~/Content/Images/Free_Parking.jpg")" />
+        </div>
+        <div class="item">
+            <img src="@Url.Content("~/Content/Images/VaLET-PARKING-21.jpg")" />
+        </div>
+    </div>
+</div>
+
+<hr />
+<div class="row text-center">
+    <div class="col-xs-6 col-md-3">
+        <a href="@Url.Action("Dashboard","Home", new { area="Manager"})" class="thumbnail">
+            <span class="fa fa-cogs logo"></span>
+            <div class="caption">
+                <h3>Manager</h3>
+        <p>Click to goto manager panel</p>
+        </div>
+        </a>
+    </div>
+    <div class="col-xs-6 col-md-3">
+        <a href="@Url.Action("Dashboard","Home", new { area="ParkMan"})" class="thumbnail">
+            <span class="fa fa-car logo"></span>
+            <div class="caption">
+                <h3>Park Man</h3>
+        <p>Click to goto parkman panel</p>
+        </div>
+        </a>
+    </div>
+    <div class="col-xs-6 col-md-3">
+        <a href="@Url.Action("SwipeInGate","Tracking", new { area="CarDriver"})" class="thumbnail">
+            <span class="fa fa-group logo"></span>
+            <div class="caption">
+                <h3>Drivers</h3>
+                <p>Click to goto drivers page</p>
+        </div>
+        </a>
+    </div>
+    <div class="col-xs-6 col-md-3">
+        <a href="@Url.Action("ParkedList","Ticket", new { area="Customer"})" class="thumbnail">
+            <span class="fa fa-user logo"></span>            
+            <div class="caption">
+                <h3>Customers</h3>
+                <p>Click to goto customers page</p>
+        </div>
+        </a>
+    </div>
+</div>

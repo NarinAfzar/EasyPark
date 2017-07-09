@@ -1,0 +1,72 @@
+﻿@model IEnumerable<EasyPark.WebUI.Areas.Customer.ViewModels.Ticket.ParkedListViewModel>
+@using EasyPark.WebUI.DAL.Entities;
+@{
+    ViewBag.Title = "Parked Cars";
+}
+
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">Parked cars</h3>
+        <div class="box-tools pull-right">
+            <!-- Buttons, labels, and many other things can be placed here! -->
+            <!-- Here is a label for example -->
+            <span class="fa fa-bell"></span>
+        </div><!-- /.box-tools -->
+    </div><!-- /.box-header -->
+
+    <div class="box-body">
+        <section id="no-more-tables">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TicketNumber)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.LicensePlate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DepartureDate)
+                        </th>
+                        <th>I need my car in (Mins)</th>
+                    </tr>
+                </thead>
+                @foreach (var item in Model)
+                {
+                    <tbody>
+                        <tr>
+                            <td data-title="@Html.DisplayNameFor(model => model.TicketNumber)">
+                                @Html.DisplayFor(modelItem => item.TicketNumber)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.LicensePlate)">
+                                @Html.DisplayFor(modelItem => item.LicensePlate)
+                            </td>
+                            <td data-title="@Html.DisplayNameFor(model => model.DepartureDate)">
+                                @Html.DisplayFor(modelItem => item.DepartureDate)
+                            </td>
+                            <td data-title="Action">
+                                @if (item.IsRequested == true)
+                                {
+                                    <p>Requsted</p>
+                                }
+                                else
+                                {
+                                    using (Html.BeginForm("SendRequest", "Ticket"))
+                                    {
+                                        @Html.Hidden("id", item.ID)
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <button name="time" type="submit" value="10" class="btn btn-default">10</button>
+                                            <button name="time" type="submit" value="20" class="btn btn-default">20</button>
+                                            <button name="time" type="submit" value="30" class="btn btn-default">30</button>
+                                        </div>            }
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                }
+            </table>
+    </section>
+</div><!-- /.box-body -->
+</div><!-- /.box -->
+
+
